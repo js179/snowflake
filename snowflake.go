@@ -1,11 +1,11 @@
 package snowflake
 
 import (
-	"errors"
 	"fmt"
-	"github.com/js179/logf"
 	"sync"
 	"time"
+
+	"github.com/js179/logf"
 )
 
 const (
@@ -75,7 +75,7 @@ func (s *Snowflake) CreateID() (int64, error) {
 
 	t := now - s.epoch
 	if t > timestampMax {
-		return -1, errors.New(fmt.Sprintf("epoch must be between 0 and %d", timestampMax-1))
+		return -1, fmt.Errorf("epoch must be between 0 and %d", timestampMax-1)
 	}
 	s.timestamp = now
 	return (t << timestampShift) | (s.datacenter << datacenterShift) | (s.worker << workerShift) | s.seq, nil
@@ -84,6 +84,7 @@ func (s *Snowflake) CreateID() (int64, error) {
 var snowflake *Snowflake
 
 func New(work, d, epoch int64) {
+	snowflake = &Snowflake{}
 	snowflake.SetWorker(work)
 	snowflake.SetDatacenter(d)
 	snowflake.SetEpoch(epoch)
